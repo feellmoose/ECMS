@@ -12,5 +12,5 @@ import lombok.NoArgsConstructor;
 public class User {
     @TableId(type = IdType.AUTO)
     private Integer id;
-    private Integer logId;
+    private String logId;
 }

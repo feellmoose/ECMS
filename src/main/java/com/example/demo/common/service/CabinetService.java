@@ -1,4 +1,4 @@
 package com.example.demo.common.service;
 
-public class CabinetService {
+public interface CabinetService {
 }

@@ -8,9 +8,10 @@ import lombok.Getter;
 public enum ErrorEnum {
     COMMON_ERROR(1000,"common error"),
     PARAM_ERROR(1001,"param error"),
+    TOKEN_ERROR(1002,"token error"),
+    PERMISSION_ERROR(1003,"permission error"),
     MQTT_ERROR(2000,"mqtt service error"),
     MQTT_TIME_OUT_ERROR(2001,"mqtt time out"),
-
     ;
 
     private final Integer code;
