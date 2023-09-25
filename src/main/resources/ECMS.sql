@@ -29,20 +29,10 @@ CREATE TABLE if not exists `cabinet`
   AUTO_INCREMENT = 1
   DEFAULT CHARSET = utf8 COMMENT ='元件柜数据';
 
-CREATE TABLE if not exists `component_type`
-(
-    `id`          int NOT NULL AUTO_INCREMENT COMMENT '元件类别id',
-    `name`        varchar(1000) COMMENT '类名',
-    `description` varchar(1000) COMMENT '描述',
-    PRIMARY KEY (`id`)
-) ENGINE = InnoDB
-  AUTO_INCREMENT = 1
-  DEFAULT CHARSET = utf8 COMMENT ='元件类别';
-
 CREATE TABLE if not exists `component`
 (
     `id`          int NOT NULL AUTO_INCREMENT COMMENT 'id',
-    `type_id`     int NOT NULL COMMENT '元件类别id',
+    `type`        int NOT NULL COMMENT '元件类别enum',
     `description` varchar(1000) COMMENT '描述',
     PRIMARY KEY (`id`)
 ) ENGINE = InnoDB
