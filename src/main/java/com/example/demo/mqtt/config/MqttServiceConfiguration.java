@@ -22,11 +22,11 @@ public class MqttServiceConfiguration {
     private String username;
     @Value("${mqtt.password}")
     private String password;
-    @Value("${mqtt.clientId}")
+    @Value("${mqtt.client-id}")
     private String clientId;
 
     @Bean
-    public MqttClient mqttClient(MqttCallback mqttCallback){
+    public MqttClient mqttClient(EcmsMqttCallback ecmsMqttCallback){
         log.info("mqtt server broker: {}",broker);
         log.info("mqtt server username: {}",username);
         log.info("mqtt server connecting...");
@@ -39,7 +39,7 @@ public class MqttServiceConfiguration {
         MqttClient mqttClient = null;
         try {
             mqttClient = new MqttClient(broker,clientId,new MemoryPersistence());
-            mqttClient.setCallback(mqttCallback);
+            mqttClient.setCallback(ecmsMqttCallback);
             mqttClient.connect(options);
         } catch (MqttException e) {
             throw new GlobalRunTimeException(ErrorEnum.MQTT_ERROR,e.getMessage());
