@@ -12,8 +12,10 @@ import lombok.NoArgsConstructor;
 public class Record {
     @TableId(type = IdType.AUTO)
     private Integer id;
+    private String messageId;
     private Integer type;
     private Integer userId;
+    private Integer state;
     private Integer storageId;
     private Integer remark;
 }
