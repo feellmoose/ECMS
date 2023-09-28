@@ -24,7 +24,7 @@ public class LoginController {
     private LoginService loginService;
 
 
-    @PostMapping("/")
+    @PostMapping("")
     public LoginInfoModel login(String code){
         UserInfo userInfo = loginService.login(code);
         return LoginInfoModel.getByUserInfo(userInfo);
