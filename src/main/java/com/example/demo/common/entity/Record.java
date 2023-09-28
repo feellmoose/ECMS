@@ -6,6 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Date;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -16,6 +18,12 @@ public class Record {
     private Integer type;
     private Integer userId;
     private Integer state;
+    private String messageState;
     private Integer storageId;
     private Integer remark;
+    private Integer boxId;
+    private Integer componentId;
+    private Integer storageSize;
+    private Integer storageUnit;
+    private Date updateTime;
 }

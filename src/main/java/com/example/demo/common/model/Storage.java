@@ -1,4 +1,4 @@
-package com.example.demo.common.entity;
+package com.example.demo.common.model;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 public class Storage {
     @TableId(type = IdType.AUTO)
     private Integer id;
-    private Integer cabinetId;
+    private Integer boxId;
     private Integer componentId;
     private Integer storageSize;
     private Integer storageUnit;

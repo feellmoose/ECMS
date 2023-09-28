@@ -26,6 +26,7 @@ CREATE TABLE if not exists `cabinet`
     `id`          int NOT NULL AUTO_INCREMENT COMMENT '元件柜id',
     `location`    varchar(1000) COMMENT '地点',
     `description` varchar(1000) COMMENT '描述',
+    `box_size` int NOT NULL COMMENT '柜门数量',
     PRIMARY KEY (`id`)
 ) ENGINE = InnoDB
   AUTO_INCREMENT = 1
@@ -36,24 +37,10 @@ CREATE TABLE if not exists `box`
     `id`         int NOT NULL AUTO_INCREMENT COMMENT '元件柜联合id',
     `cabinet_id` int NOT NULL COMMENT '元件柜id',
     `box_id`     int NOT NULL COMMENT '元件柜门id',
-    `total_size` int NOT NULL default 0 COMMENT '存储总量',
     PRIMARY KEY (`id`)
 ) ENGINE = InnoDB
   AUTO_INCREMENT = 1
   DEFAULT CHARSET = utf8 COMMENT ='元件柜数据';
-
-CREATE TABLE if not exists `storage`
-(
-    `id`           int NOT NULL AUTO_INCREMENT COMMENT 'id',
-    `box_id`       int NOT NULL COMMENT '元件柜id',
-    `component_id` int NOT NULL COMMENT '元件id',
-    `storage_size` int NOT NULL default 0 COMMENT '存储数量',
-    `storage_unit` int NOT NULL default 0 COMMENT '存储单位',
-    FOREIGN KEY (`box_id`) REFERENCES box (`id`),
-    PRIMARY KEY (`id`)
-) ENGINE = InnoDB
-  AUTO_INCREMENT = 1
-  DEFAULT CHARSET = utf8 COMMENT ='元件柜存储数据';
 
 #记录
 CREATE TABLE if not exists `record`
@@ -62,9 +49,14 @@ CREATE TABLE if not exists `record`
     `message_id` varchar(225) NOT NULL COMMENT '生成信息Id',
     `type`       int NOT NULL COMMENT '记录类型0拿1放',
     `user_id`    int NOT NULL COMMENT '用户id',
-    `storage_id` int NOT NULL COMMENT '存储id',
+    `box_id`       int NOT NULL COMMENT '元件柜id',
+    `component_id` int NOT NULL COMMENT '元件id',
+    `storage_size` int NOT NULL default 0 COMMENT '存储数量',
+    `storage_unit` int NOT NULL default 0 COMMENT '存储单位',
     `state`      int NOT NULL COMMENT '状态',
+    `message_state`      varchar(1000) COMMENT '信息',
     `remark`     varchar(1000) COMMENT '备注',
+    `update_time` datetime NOT NULL default CURRENT_TIMESTAMP COMMENT '时间',
     FOREIGN KEY (`user_id`) REFERENCES user (`id`),
     PRIMARY KEY (`id`)
 ) ENGINE = InnoDB

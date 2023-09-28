@@ -2,9 +2,12 @@ package com.example.demo.common.controller.api;
 
 import com.example.demo.common.anno.RoleRequire;
 import com.example.demo.common.enums.RoleType;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import com.example.demo.common.model.CabinetModel;
+import com.example.demo.common.model.PageModel;
+import com.example.demo.common.model.RecordModel;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * @Title
@@ -17,5 +20,15 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/admin")
 public class AdminController {
-    //TODO 主要实现功能:1.修改库存信息 2.查看存取信息 3.配合user拿组件
+    //TODO 修改库存信息
+    @PostMapping("/cabinet/storageInfo")
+    public CabinetModel modifyCabinetStorage() {
+        return null;
+    }
+    //TODO 查看存取信息
+    @GetMapping("/records")
+    public PageModel<RecordModel> getRecord(String cabinetId, String boxId, Integer pageNum, Integer pageSize) {
+        return null;
+    }
+    //TODO 配合user拿组件
 }

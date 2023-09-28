@@ -14,5 +14,5 @@ public class Cabinet {
     private Integer id;
     private String location;
     private String description;
-    private Integer totalSize;
+    private Integer boxSize;
 }
