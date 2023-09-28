@@ -2,7 +2,8 @@ package com.example.demo.mqtt.async;
 
 import com.example.demo.common.service.ComponentService;
 import com.example.demo.common.utils.JsonUtil;
-import com.example.demo.mqtt.model.OneChipMessageModel;
+import com.example.demo.mqtt.model.MqttMessageDetail;
+import com.example.demo.mqtt.model.data.ReplyMessageData;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
@@ -26,15 +27,16 @@ public class EcmsMqttCallback implements MqttCallback {
     @Override
     public void messageArrived(String s, MqttMessage mqttMessage) {
         String payload = Arrays.toString(mqttMessage.getPayload());
-        OneChipMessageModel oneChipMessage = JsonUtil.fromJson(payload, OneChipMessageModel.class);
-        if (!oneChipMessage.checkSignature()) {
+        MqttMessageDetail mqttMessageDetail = JsonUtil.fromJson(payload, MqttMessageDetail.class);
+        if (!mqttMessageDetail.checkSignature()) {
             log.error("error signature received: {}", payload);
             return;
         }
-        switch (oneChipMessage.getStatus()) {
-            case -1 -> componentService.optFailure(oneChipMessage);
-            case 0 -> componentService.optSuccess(oneChipMessage);
-            default -> log.warn("error state of message: {}", oneChipMessage);
+        ReplyMessageData replyMessageData = (ReplyMessageData) mqttMessageDetail.getData();
+        switch (replyMessageData.getStatus()) {
+            case -1 -> componentService.optFailure(replyMessageData);
+            case 0 -> componentService.optSuccess(replyMessageData);
+            default -> log.warn("error status of message: {}", mqttMessageDetail);
         }
     }
 

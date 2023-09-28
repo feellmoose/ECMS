@@ -25,7 +25,7 @@ import java.util.Map;
 @RequestMapping("/api/cabinet")
 public class CabinetController {
 
-    @GetMapping("")
+    @GetMapping("/")
     public PageModel<Cabinet> getCabinets(Integer pageNum, Integer pageSize){
         //与盒子一起创建完毕
         //与盒子自动编号

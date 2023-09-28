@@ -33,6 +33,7 @@ public class UserController {
     public CabinetModel getCabinetStorage(String cabinetId) {
         return null;
     }
+    //TODO 发起请求
     //TODO 配合admin拿组件
 
 }

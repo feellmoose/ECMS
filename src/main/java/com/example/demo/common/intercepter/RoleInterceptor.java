@@ -12,12 +12,14 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
+import org.springframework.stereotype.Component;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.util.Map;
 
+@Component
 public class RoleInterceptor implements HandlerInterceptor {
     public static final ThreadLocal<UserInfo> userHolder = new ThreadLocal<>();
 
