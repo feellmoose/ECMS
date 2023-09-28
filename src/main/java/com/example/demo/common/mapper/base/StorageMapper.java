@@ -1,8 +1,7 @@
 package com.example.demo.common.mapper.base;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.example.demo.common.entity.Cabinet;
-import com.example.demo.common.entity.Storage;
+import com.example.demo.common.model.Storage;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Repository;
 

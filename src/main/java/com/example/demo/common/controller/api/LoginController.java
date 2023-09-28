@@ -23,17 +23,16 @@ public class LoginController {
     @Resource
     private LoginService loginService;
 
-    /**
-     * @Title login
-     * @Description 登录接口，使用Oauth登录
-     * @param code
-     * @return LoginInfoModel
-     * @Author feelMoose
-     * @Date 2023/9/25 21:41
-     */
+
     @PostMapping("")
     public LoginInfoModel login(String code){
         UserInfo userInfo = loginService.login(code);
+        return LoginInfoModel.getByUserInfo(userInfo);
+    }
+
+    @PostMapping("/register")
+    public LoginInfoModel register(String username,String logId, String code){
+        UserInfo userInfo = loginService.register(username, logId, code);
         return LoginInfoModel.getByUserInfo(userInfo);
     }
 
