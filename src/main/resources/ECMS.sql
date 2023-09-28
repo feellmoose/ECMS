@@ -37,6 +37,7 @@ CREATE TABLE if not exists `box`
     `id`         int NOT NULL AUTO_INCREMENT COMMENT '元件柜联合id',
     `cabinet_id` int NOT NULL COMMENT '元件柜id',
     `box_id`     int NOT NULL COMMENT '元件柜门id',
+    `action_type`     int NOT NULL default 0 COMMENT '开启类型默认0直接开启',
     PRIMARY KEY (`id`)
 ) ENGINE = InnoDB
   AUTO_INCREMENT = 1

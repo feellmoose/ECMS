@@ -48,21 +48,21 @@ public class CabinetController {
     public void delCabinet(Integer id){
         //与盒子一起删除
     }
-    @GetMapping("")
+    @GetMapping("/box")
     public PageModel<Box> getBoxes(Integer cabinetId, Integer pageNum, Integer pageSize){
         //与盒子一起创建完毕
         //与盒子自动编号
         return null;
     }
-
-    public Box addBoxForCabinet(Integer cabinetId,Integer boxId){
+    @PostMapping("/box/add")
+    public Box addBoxForCabinet(Integer cabinetId,Integer boxId,Integer actionType){
         return null;
     }
-
-    public void modifyBoxForCabinet(Integer id ,Integer cabinetId,Integer boxId){
+    @PostMapping("/box/update")
+    public void modifyBoxForCabinet(Integer id ,Integer cabinetId,Integer boxId,Integer actionType){
 
     }
-
+    @PostMapping("/box/del")
     public void delBoxForCabinet(Integer id){
 
     }
