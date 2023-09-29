@@ -9,10 +9,7 @@ import com.example.demo.common.model.CabinetModel;
 import com.example.demo.common.model.PageModel;
 import com.example.demo.common.model.RecordModel;
 import com.example.demo.common.model.UserInfo;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -29,17 +26,19 @@ import java.util.List;
 public class UserController {
     //TODO 查看存储柜信息
     @GetMapping("/cabinets")
-    public PageModel<Cabinet> getCabinets(Integer pageNum, Integer pageSize) {
+    public PageModel<Cabinet> getCabinets(@RequestParam(defaultValue = "1") Integer pageNum,
+                                          @RequestParam(defaultValue = "10")Integer pageSize) {
         return null;
     }
 
     //TODO 查看存储信息
     @GetMapping("/cabinet/storageInfo")
-    public CabinetModel getCabinetStorage(String cabinetId) {
+    public CabinetModel getCabinetStorage(Integer cabinetId) {
         return null;
     }
+
     //TODO 配合admin拿组件
-    @PostMapping("/openBox")
+    @GetMapping("/openBox")
     public String openBox(Integer cabinetId,Integer boxId) {
         UserInfo userInfo = RoleInterceptor.userHolder.get();
         return null;

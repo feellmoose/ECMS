@@ -23,11 +23,16 @@ public class AdminController {
     //TODO 修改库存信息
     @PostMapping("/cabinet/storageInfo")
     public CabinetModel modifyCabinetStorage() {
+        //需求：添加库存，减少库存，库存降为0？
         return null;
     }
+
+
     //TODO 查看存取信息
     @GetMapping("/records")
-    public PageModel<RecordModel> getRecord(String cabinetId, String boxId, Integer pageNum, Integer pageSize) {
+    public PageModel<RecordModel> getRecord(Integer cabinetId, Integer boxId,
+                                            @RequestParam(defaultValue = "1") Integer pageNum,
+                                            @RequestParam(defaultValue = "10")Integer pageSize) {
         return null;
     }
     //TODO 配合user拿组件

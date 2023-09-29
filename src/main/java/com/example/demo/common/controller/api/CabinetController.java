@@ -5,10 +5,7 @@ import com.example.demo.common.entity.Box;
 import com.example.demo.common.entity.Cabinet;
 import com.example.demo.common.enums.RoleType;
 import com.example.demo.common.model.PageModel;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
@@ -20,13 +17,14 @@ import java.util.Map;
  * @Date 2023/9/24 23:01
  */
 
-@RoleRequire(role = {RoleType.ADMIN,RoleType.ROOT})
+@RoleRequire(role = {RoleType.ROOT})
 @RestController
 @RequestMapping("/api/cabinet")
 public class CabinetController {
 
     @GetMapping("")
-    public PageModel<Cabinet> getCabinets(Integer pageNum, Integer pageSize){
+    public PageModel<Cabinet> getCabinets(@RequestParam(defaultValue = "1") Integer pageNum,
+                                          @RequestParam(defaultValue = "10")Integer pageSize){
         //与盒子一起创建完毕
         //与盒子自动编号
         return null;
@@ -49,7 +47,9 @@ public class CabinetController {
         //与盒子一起删除
     }
     @GetMapping("/box")
-    public PageModel<Box> getBoxes(Integer cabinetId, Integer pageNum, Integer pageSize){
+    public PageModel<Box> getBoxes(Integer cabinetId,
+                                   @RequestParam(defaultValue = "1") Integer pageNum,
+                                   @RequestParam(defaultValue = "10")Integer pageSize){
         //与盒子一起创建完毕
         //与盒子自动编号
         return null;
