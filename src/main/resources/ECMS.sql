@@ -53,7 +53,6 @@ CREATE TABLE if not exists `record`
     `box_id`       int NOT NULL COMMENT '元件柜id',
     `component_id` int NOT NULL COMMENT '元件id',
     `storage_size` int NOT NULL default 0 COMMENT '存储数量',
-    `storage_unit` int NOT NULL default 0 COMMENT '存储单位',
     `state`      int NOT NULL COMMENT '状态',
     `message_state`      varchar(1000) COMMENT '信息',
     `remark`     varchar(1000) COMMENT '备注',

@@ -2,16 +2,18 @@ package com.example.demo.common.controller.api;
 
 import com.example.demo.common.anno.RoleRequire;
 import com.example.demo.common.entity.Cabinet;
-import com.example.demo.common.entity.Record;
+import com.example.demo.common.enums.ComponentType;
+import com.example.demo.common.enums.ErrorEnum;
 import com.example.demo.common.enums.RoleType;
+import com.example.demo.common.exception.GlobalRunTimeException;
 import com.example.demo.common.intercepter.RoleInterceptor;
 import com.example.demo.common.model.CabinetModel;
 import com.example.demo.common.model.PageModel;
-import com.example.demo.common.model.RecordModel;
 import com.example.demo.common.model.UserInfo;
+import com.example.demo.common.service.CabinetService;
+import com.example.demo.common.service.ComponentService;
+import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 /**
  * @Title
@@ -24,24 +26,36 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/user")
 public class UserController {
-    //TODO 查看存储柜信息
+    @Resource
+    private CabinetService cabinetService;
+    @Resource
+    private ComponentService componentService;
+
     @GetMapping("/cabinets")
     public PageModel<Cabinet> getCabinets(@RequestParam(defaultValue = "1") Integer pageNum,
-                                          @RequestParam(defaultValue = "10")Integer pageSize) {
-        return null;
+                                          @RequestParam(defaultValue = "10") Integer pageSize) {
+        return cabinetService.getCabinets(pageNum, pageSize);
     }
 
-    //TODO 查看存储信息
     @GetMapping("/cabinet/storageInfo")
     public CabinetModel getCabinetStorage(Integer cabinetId) {
-        return null;
+        return cabinetService.getCabinetStorage(cabinetId);
     }
 
-    //TODO 配合admin拿组件
-    @GetMapping("/openBox")
-    public String openBox(Integer cabinetId,Integer boxId) {
+    @PostMapping("/openBox")
+    public CabinetModel openBox(Integer action,
+                                Integer cabinetId, Integer boxId,
+                                Integer componentIndex, Integer size) {
         UserInfo userInfo = RoleInterceptor.userHolder.get();
-        return null;
+        return switch (action) {
+            case 0 ->
+                    componentService.takeComponent(userInfo, cabinetId, boxId, ComponentType.getByIndex(componentIndex), size);
+            case 1 ->
+                    componentService.addComponent(userInfo, cabinetId, boxId, ComponentType.getByIndex(componentIndex), size);
+            case 2 ->
+                    componentService.modifyComponent(userInfo, cabinetId, boxId, ComponentType.getByIndex(componentIndex), size);
+            default -> throw new GlobalRunTimeException(ErrorEnum.PARAM_ERROR, "action invalid");
+        };
     }
 
 }

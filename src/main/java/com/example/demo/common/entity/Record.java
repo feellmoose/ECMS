@@ -24,6 +24,5 @@ public class Record {
     private Integer boxId;
     private Integer componentId;
     private Integer storageSize;
-    private Integer storageUnit;
     private Date updateTime;
 }
