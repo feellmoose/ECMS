@@ -3,7 +3,9 @@ package com.example.demo.common.service.impl;
 import com.example.demo.common.entity.Box;
 import com.example.demo.common.model.PageModel;
 import com.example.demo.common.service.BoxService;
+import org.springframework.stereotype.Service;
 
+@Service
 public class BoxServiceImpl implements BoxService {
     @Override
     public PageModel<Box> getBoxes(Integer cabinetId, Integer pageNum, Integer pageSize) {

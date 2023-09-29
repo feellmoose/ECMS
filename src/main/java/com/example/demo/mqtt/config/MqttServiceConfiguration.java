@@ -3,6 +3,7 @@ package com.example.demo.mqtt.config;
 import com.example.demo.common.enums.ErrorEnum;
 import com.example.demo.common.exception.GlobalRunTimeException;
 import com.example.demo.mqtt.async.EcmsMqttCallback;
+import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.paho.client.mqttv3.MqttCallback;
 import org.eclipse.paho.client.mqttv3.MqttClient;
@@ -17,35 +18,25 @@ import org.springframework.context.annotation.Configuration;
 @Slf4j
 public class MqttServiceConfiguration {
     @Value("${mqtt.broker}")
-    private String broker;
+    private String pBroker;
     @Value("${mqtt.username}")
-    private String username;
+    private String pUsername;
     @Value("${mqtt.password}")
-    private String password;
+    private String pPassword;
     @Value("${mqtt.client-id}")
-    private String clientId;
+    private String pClientId;
 
-    @Bean
-    public MqttClient mqttClient(EcmsMqttCallback ecmsMqttCallback){
-        log.info("mqtt server broker: {}",broker);
-        log.info("mqtt server username: {}",username);
-        log.info("mqtt server connecting...");
-        MqttConnectOptions options = new MqttConnectOptions();
-        options.setAutomaticReconnect(true);
-        options.setConnectionTimeout(10000);//10秒超时
-        options.setUserName(username);
-        options.setKeepAliveInterval(1000);//1秒心跳间隔
-        options.setPassword(password.toCharArray());
-        MqttClient mqttClient = null;
-        try {
-            mqttClient = new MqttClient(broker,clientId,new MemoryPersistence());
-            mqttClient.setCallback(ecmsMqttCallback);
-            mqttClient.connect(options);
-        } catch (MqttException e) {
-            throw new GlobalRunTimeException(ErrorEnum.MQTT_ERROR,e.getMessage());
-        }
-        log.info("mqtt server connect success");
-        return mqttClient;
+    public static String broker;
+    public static String username;
+    public static String password;
+    public static String clientId;
+
+
+    @PostConstruct
+    public void setValue(){
+        broker = pBroker;
+        username = pUsername;
+        password = pPassword;
+        clientId = pClientId;
     }
-
 }
