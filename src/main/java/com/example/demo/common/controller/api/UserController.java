@@ -3,9 +3,7 @@ package com.example.demo.common.controller.api;
 import com.example.demo.common.anno.RoleRequire;
 import com.example.demo.common.entity.Cabinet;
 import com.example.demo.common.enums.ComponentType;
-import com.example.demo.common.enums.ErrorEnum;
 import com.example.demo.common.enums.RoleType;
-import com.example.demo.common.exception.GlobalRunTimeException;
 import com.example.demo.common.intercepter.RoleInterceptor;
 import com.example.demo.common.model.CabinetModel;
 import com.example.demo.common.model.PageModel;
@@ -43,19 +41,10 @@ public class UserController {
     }
 
     @PostMapping("/openBox")
-    public CabinetModel openBox(Integer action,
-                                Integer cabinetId, Integer boxId,
-                                Integer componentIndex, Integer size) {
+    public String openBox(Integer cabinetId, Integer boxId,
+                          Integer componentIndex, Integer size, String remark) {
         UserInfo userInfo = RoleInterceptor.userHolder.get();
-        return switch (action) {
-            case 0 ->
-                    componentService.takeComponent(userInfo, cabinetId, boxId, ComponentType.getByIndex(componentIndex), size);
-            case 1 ->
-                    componentService.addComponent(userInfo, cabinetId, boxId, ComponentType.getByIndex(componentIndex), size);
-            case 2 ->
-                    componentService.modifyComponent(userInfo, cabinetId, boxId, ComponentType.getByIndex(componentIndex), size);
-            default -> throw new GlobalRunTimeException(ErrorEnum.PARAM_ERROR, "action invalid");
-        };
+        return componentService.modifyComponent(userInfo, cabinetId, boxId, ComponentType.getByIndex(componentIndex), remark, size);
     }
 
 }

@@ -13,6 +13,6 @@ public interface CabinetService {
     CabinetModel getCabinetStorage(Integer cabinetId);
     void addCabinet(String location, String description, Integer boxSize);
     void delCabinet(Integer cabinetId);
-    void modifyCabinet(Integer id ,String location,String description);
+    void modifyCabinet(Integer id, String location, String description,Integer boxSize);
 
 }

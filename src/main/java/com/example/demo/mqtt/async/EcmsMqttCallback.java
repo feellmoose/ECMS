@@ -26,18 +26,7 @@ public class EcmsMqttCallback implements MqttCallback {
 
     @Override
     public void messageArrived(String s, MqttMessage mqttMessage) {
-        String payload = Arrays.toString(mqttMessage.getPayload());
-        MqttMessageDetail mqttMessageDetail = JsonUtil.fromJson(payload, MqttMessageDetail.class);
-        if (!mqttMessageDetail.checkSignature()) {
-            log.error("error signature received: {}", payload);
-            return;
-        }
-        ReplyMessageData replyMessageData = (ReplyMessageData) mqttMessageDetail.getData();
-        switch (replyMessageData.getStatus()) {
-            case -1 -> componentService.optFailure(replyMessageData);
-            case 0 -> componentService.optSuccess(replyMessageData);
-            default -> log.warn("error status of message: {}", mqttMessageDetail);
-        }
+        log.info("mqtt filter: message handle success.");
     }
 
     @Override
