@@ -5,13 +5,10 @@ import com.example.demo.common.entity.Box;
 import com.example.demo.common.entity.Cabinet;
 import com.example.demo.common.enums.RoleType;
 import com.example.demo.common.model.PageModel;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
-import java.util.Map;
+import com.example.demo.common.service.BoxService;
+import com.example.demo.common.service.CabinetService;
+import jakarta.annotation.Resource;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * @Title
@@ -20,51 +17,63 @@ import java.util.Map;
  * @Date 2023/9/24 23:01
  */
 
-@RoleRequire(role = {RoleType.ADMIN,RoleType.ROOT})
+@RoleRequire(role = {RoleType.ROOT})
 @RestController
 @RequestMapping("/api/cabinet")
 public class CabinetController {
 
+    @Resource
+    private CabinetService cabinetService;
+    @Resource
+    private BoxService boxService;
+
     @GetMapping("")
-    public PageModel<Cabinet> getCabinets(Integer pageNum, Integer pageSize){
-        //与盒子一起创建完毕
-        //与盒子自动编号
-        return null;
+    public PageModel<Cabinet> getCabinets(@RequestParam(defaultValue = "1") Integer pageNum,
+                                          @RequestParam(defaultValue = "10") Integer pageSize) {
+        return cabinetService.getCabinets(pageNum, pageSize);
     }
 
     @PostMapping("/add")
-    public Cabinet addCabinet(String location, String description, Integer boxSize){
-        //与盒子一起创建完毕
-        //与盒子自动编号
-        return null;
+    public String addCabinet(String location, String description, Integer boxSize) {
+        cabinetService.addCabinet(location, description, boxSize);
+        return "ok";
     }
 
     @PostMapping("/update")
-    public void modifyCabinet(Integer id ,String location,String description){
-
+    public String modifyCabinet(Integer id, String location, String description, Integer boxSize) {
+        cabinetService.modifyCabinet(id, location, description, boxSize);
+        return "ok";
     }
 
     @PostMapping("/del")
-    public void delCabinet(Integer id){
-        //与盒子一起删除
+    public String delCabinet(Integer id) {
+        cabinetService.delCabinet(id);
+        return "ok";
     }
+
     @GetMapping("/box")
-    public PageModel<Box> getBoxes(Integer cabinetId, Integer pageNum, Integer pageSize){
-        //与盒子一起创建完毕
-        //与盒子自动编号
-        return null;
+    public PageModel<Box> getBoxes(Integer cabinetId,
+                                   @RequestParam(defaultValue = "1") Integer pageNum,
+                                   @RequestParam(defaultValue = "10") Integer pageSize) {
+        return boxService.getBoxes(cabinetId, pageNum, pageSize);
     }
+
     @PostMapping("/box/add")
-    public Box addBoxForCabinet(Integer cabinetId,Integer boxId,Integer actionType){
-        return null;
+    public String addBoxForCabinet(Integer cabinetId, Integer boxId, Integer actionType) {
+        boxService.addBoxForCabinet(cabinetId, boxId, actionType);
+        return "ok";
     }
+
     @PostMapping("/box/update")
-    public void modifyBoxForCabinet(Integer id ,Integer cabinetId,Integer boxId,Integer actionType){
-
+    public String modifyBoxForCabinet(Integer id, Integer cabinetId, Integer boxId, Integer actionType) {
+        boxService.modifyBoxForCabinet(id, cabinetId, boxId, actionType);
+        return "ok";
     }
-    @PostMapping("/box/del")
-    public void delBoxForCabinet(Integer id){
 
+    @PostMapping("/box/del")
+    public String delBox(Integer id) {
+        boxService.delBox(id);
+        return "ok";
     }
 
 }

@@ -1,12 +1,16 @@
 package com.example.demo.mqtt.service;
 
-import org.eclipse.paho.client.mqttv3.MqttCallback;
-import org.eclipse.paho.client.mqttv3.MqttMessage;
+import com.example.demo.mqtt.model.MqttMessageDetail;
+import com.example.demo.mqtt.model.data.MessageData;
+import org.eclipse.paho.client.mqttv3.IMqttToken;
+import org.eclipse.paho.client.mqttv3.MqttClient;
 
 public interface MqttService {
 
-    void publish(String topic,MqttMessage message);
+    void publish(String topic, MqttMessageDetail messageDetail);
 
-    void subscribe(String topic);
+    IMqttToken subscribeWithResponse(String topic);
+
+    MqttClient mqttClient();
 
 }

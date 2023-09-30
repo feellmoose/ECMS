@@ -1,13 +1,16 @@
 package com.example.demo.common.controller.api;
 
 import com.example.demo.common.anno.RoleRequire;
+import com.example.demo.common.enums.ComponentType;
 import com.example.demo.common.enums.RoleType;
-import com.example.demo.common.model.CabinetModel;
+import com.example.demo.common.intercepter.RoleInterceptor;
 import com.example.demo.common.model.PageModel;
 import com.example.demo.common.model.RecordModel;
+import com.example.demo.common.model.UserInfo;
+import com.example.demo.common.service.ComponentService;
+import com.example.demo.common.service.RecordService;
+import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 /**
  * @Title
@@ -16,19 +19,27 @@ import java.util.List;
  * @Date 2023/9/24 23:01
  */
 
-@RoleRequire(role = {RoleType.ADMIN,RoleType.ROOT})
+@RoleRequire(role = {RoleType.ADMIN, RoleType.ROOT})
 @RestController
 @RequestMapping("/api/admin")
 public class AdminController {
-    //TODO 修改库存信息
+    @Resource
+    private ComponentService componentService;
+    @Resource
+    private RecordService recordService;
+
     @PostMapping("/cabinet/storageInfo")
-    public CabinetModel modifyCabinetStorage() {
-        return null;
+    public String modifyCabinetStorage(Integer cabinetId, Integer boxId,
+                                       Integer componentIndex, Integer size, String remark) {
+        UserInfo userInfo = RoleInterceptor.userHolder.get();
+        return componentService.modifyComponent(userInfo, cabinetId, boxId, ComponentType.getByIndex(componentIndex), remark, size);
     }
-    //TODO 查看存取信息
+
     @GetMapping("/records")
-    public PageModel<RecordModel> getRecord(String cabinetId, String boxId, Integer pageNum, Integer pageSize) {
-        return null;
+    public PageModel<RecordModel> getRecord(Integer cabinetId, Integer boxId,
+                                            @RequestParam(defaultValue = "1") Integer pageNum,
+                                            @RequestParam(defaultValue = "10") Integer pageSize) {
+        return recordService.getRecord(cabinetId, boxId, pageNum, pageSize);
     }
-    //TODO 配合user拿组件
+
 }

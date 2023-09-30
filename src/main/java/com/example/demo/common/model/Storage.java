@@ -15,5 +15,4 @@ public class Storage {
     private Integer boxId;
     private Integer componentId;
     private Integer storageSize;
-    private Integer storageUnit;
 }
