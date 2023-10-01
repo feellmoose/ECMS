@@ -12,4 +12,6 @@ import java.util.List;
 @Repository
 public interface BoxMapper extends BaseMapper<Box> {
     List<BoxStorageModel> selectBoxStorageModels(Integer cabinetId);
+
+    Integer insertBranch(List<Box> boxes);
 }

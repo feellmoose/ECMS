@@ -13,6 +13,6 @@ public class Storage {
     @TableId(type = IdType.AUTO)
     private Integer id;
     private Integer boxId;
-    private Integer componentId;
+    private Integer componentIndex;
     private Integer storageSize;
 }

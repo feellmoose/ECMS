@@ -7,7 +7,8 @@ import lombok.Getter;
 @AllArgsConstructor
 @Getter
 public enum ComponentType {
-    XXX(1,"xxx"),
+    Empty(0,"empty_box"),
+    XXX(1,"xxx")
     ;
     private final Integer index;
     private final String description;

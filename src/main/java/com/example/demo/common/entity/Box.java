@@ -10,6 +10,6 @@ import lombok.NoArgsConstructor;
 public class Box {
     private Integer id;
     private Integer cabinetId;
-    private Integer boxId;
+    private Integer boxGlobalId;
     private Integer actionType;
 }

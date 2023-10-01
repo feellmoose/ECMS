@@ -36,6 +36,8 @@ public class ComponentServiceImpl implements ComponentService {
     private RecordMapper recordMapper;
     private static final String topic = "topic/box";
 
+
+
     @Override
     @Transactional(rollbackFor = Exception.class)
     public String modifyComponent(UserInfo userInfo, Integer cabinetId, Integer boxId, ComponentType componentType, String remark, Integer size) {

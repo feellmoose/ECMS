@@ -9,6 +9,7 @@ import com.example.demo.common.mapper.CabinetMapper;
 import com.example.demo.common.model.BoxStorageModel;
 import com.example.demo.common.model.CabinetModel;
 import com.example.demo.common.model.PageModel;
+import com.example.demo.common.model.UserInfo;
 import com.example.demo.common.service.BoxService;
 import com.example.demo.common.service.CabinetService;
 import jakarta.annotation.Resource;
@@ -40,14 +41,14 @@ public class CabinetServiceImpl implements CabinetService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void addCabinet(String location, String description, Integer boxSize) {
+    public void addCabinet(UserInfo userInfo,String location, String description, Integer boxSize,Integer actionType) {
         Cabinet cabinet = new Cabinet(null, location, description, boxSize);
         cabinetMapper.insert(cabinet);
         List<Integer> list = new ArrayList<>(boxSize);
         for (int i = 0; i < boxSize; i++) {
             list.set(i, i + 1);
         }
-        boxService.addBranchBoxForCabinet(cabinet.getId(), list);
+        boxService.addBranchBoxForCabinet(userInfo,cabinet.getId(), list,actionType);
     }
 
     @Override
@@ -66,7 +67,7 @@ public class CabinetServiceImpl implements CabinetService {
                 throw new GlobalRunTimeException(ErrorEnum.PARAM_ERROR, "box size to small,less size is" + localSize);
             }
         }
-        cabinetMapper.modifyCabinet(id, location, description, boxSize);
+        cabinetMapper.updateById(new Cabinet(id, location, description, boxSize));
     }
 
 }

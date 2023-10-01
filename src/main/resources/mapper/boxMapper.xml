@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.common.mapper.BoxMapper">
+    <resultMap id="BoxStorageModel" type="com.example.demo.common.model.BoxStorageModel" autoMapping="true">
+        <result property="box.id" column="bid"/>
+        <result property="box.id" column="bcabinetId"/>
+        <result property="box.id" column="bboxId"/>
+        <result property="box.id" column="bactionType"/>
+        <result property="box.id" column="sid"/>
+        <result property="box.id" column="sboxId"/>
+        <result property="box.id" column="scomponentIndex"/>
+        <result property="box.id" column="sstorageSize"/>
+    </resultMap>
+
+    <select id="selectBoxStorageModels"  resultMap="BoxStorageModel" parameterType="integer">
+        select b.id              bid,
+               b.cabinet_id      bcabinetId,
+               b.box_id          bboxId,
+               b.action_type     bactionType,
+               r.id              sid,
+               r.box_global_id   sboxId,
+               r.component_index scomponentIndex,
+               r.storage_size    sstorageSize
+        from box b
+                 join record r on b.id = r.box_global_id
+        where cabinet_id = #{cabinetId}
+    </select>
+
+    <insert id="insertBranch" parameterType="list">
+        insert into box (cabinet_id, box_id, action_type) values
+        <foreach collection="boxes" index="index" item="item" open="(" close=")" separator="),(">
+            #{cabinetId},#{boxId},#{actionType}
+        </foreach>
+    </insert>
+</mapper>
