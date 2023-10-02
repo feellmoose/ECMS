@@ -1,6 +1,7 @@
 package com.example.demo.common.service;
 
 import com.example.demo.common.entity.Box;
+import com.example.demo.common.entity.Cabinet;
 import com.example.demo.common.model.BoxStorageModel;
 import com.example.demo.common.model.PageModel;
 import com.example.demo.common.model.UserInfo;
@@ -18,4 +19,6 @@ public interface BoxService {
     void delBoxForCabinet(Integer cabinetId);
     List<BoxStorageModel> selectBoxStorageModels(Integer cabinetId);
     Integer countBoxes(Integer cabinet);
+    Box getBox(Integer cabinetId,Integer boxId);
+    Box getBox(Integer globalId);
 }

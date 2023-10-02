@@ -22,7 +22,7 @@ public class Record {
     private Integer state;
     private String messageState;
     private String remark;
-    private Integer boxId;
+    private Integer boxGlobalId;
     private Integer componentIndex;
     private Integer storageSize;
     private Date updateTime;

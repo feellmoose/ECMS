@@ -41,7 +41,7 @@ public class BoxServiceImpl implements BoxService {
     public void addBoxForCabinet(UserInfo userInfo,Integer cabinetId , Integer boxId, Integer actionType) {
         actionType = actionType == null?DEFAULT_ACTION_TYPE:actionType;
         Record record = Record.builder()
-                .boxId(boxId)
+                .boxGlobalId(boxId)
                 .componentIndex(ComponentType.Empty.getIndex())
                 .state(RecordState.build.getValue())
                 .messageId("init-box")
@@ -63,7 +63,7 @@ public class BoxServiceImpl implements BoxService {
                 .toList();
         List<Record> records = boxId.stream()
                         .map(id ->  Record.builder()
-                                    .boxId(id)
+                                    .boxGlobalId(id)
                                     .componentIndex(ComponentType.Empty.getIndex())
                                     .state(RecordState.build.getValue())
                                     .messageId("init-box")
@@ -82,7 +82,6 @@ public class BoxServiceImpl implements BoxService {
     public void modifyBoxForCabinet(Integer id, Integer cabinetId, Integer boxId, Integer actionType) {
         boxMapper.updateById(new Box(id,cabinetId,boxId,actionType));
     }
-
 
     @Override
     public void delBox(Integer id) {
@@ -104,5 +103,17 @@ public class BoxServiceImpl implements BoxService {
     public Integer countBoxes(Integer cabinet) {
         return  boxMapper.selectCount(Wrappers.lambdaQuery(Box.class)
                 .eq(Box::getCabinetId,cabinet)).intValue();
+    }
+
+    @Override
+    public Box getBox(Integer cabinetId, Integer boxId) {
+        return boxMapper.selectOne(Wrappers.lambdaQuery(Box.class)
+                .eq(Box::getCabinetId,cabinetId)
+                .eq(Box::getBoxId,boxId));
+    }
+
+    @Override
+    public Box getBox(Integer globalId) {
+        return boxMapper.selectById(globalId);
     }
 }

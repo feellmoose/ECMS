@@ -2,7 +2,9 @@ package com.example.demo.common.controller.api;
 
 import com.example.demo.common.anno.RoleRequire;
 import com.example.demo.common.enums.ComponentType;
+import com.example.demo.common.enums.ErrorEnum;
 import com.example.demo.common.enums.RoleType;
+import com.example.demo.common.exception.GlobalRunTimeException;
 import com.example.demo.common.intercepter.RoleInterceptor;
 import com.example.demo.common.model.PageModel;
 import com.example.demo.common.model.RecordModel;
@@ -29,9 +31,16 @@ public class AdminController {
     private RecordService recordService;
 
     @PostMapping("/cabinet/storageInfo")
-    public String modifyCabinetStorage(Integer cabinetId, Integer boxId,
-                                       Integer componentIndex, Integer size, String remark) {
+    public String modifyCabinetStorage(Integer cabinetId,Integer boxId,Integer componentIndex,
+                                       @RequestParam(required = false,defaultValue = "0") Integer size,
+                                       @RequestParam(required = false,defaultValue = "") String remark) {
         UserInfo userInfo = RoleInterceptor.userHolder.get();
+        if(componentIndex == null){
+            throw new GlobalRunTimeException(ErrorEnum.PARAM_ERROR,"invalid component");
+        }
+        if(!size.equals(0) && componentIndex.equals(ComponentType.Empty.getIndex())) {
+            throw new GlobalRunTimeException(ErrorEnum.PARAM_ERROR);
+        }
         return componentService.modifyComponent(userInfo, cabinetId, boxId, ComponentType.getByIndex(componentIndex), remark, size);
     }
 

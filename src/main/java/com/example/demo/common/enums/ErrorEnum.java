@@ -12,6 +12,7 @@ public enum ErrorEnum {
     PERMISSION_ERROR(1003,"permission error"),
     MQTT_ERROR(2000,"mqtt service error"),
     MQTT_TIME_OUT_ERROR(2001,"mqtt time out"),
+    INTERNAL_SERVER_ERROR(500,"internal server error")
     ;
 
     private final Integer code;

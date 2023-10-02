@@ -42,9 +42,9 @@ public class UserController {
 
     @PostMapping("/openBox")
     public String openBox(Integer cabinetId, Integer boxId,
-                          Integer componentIndex, Integer size, String remark) {
+                          Integer size, String remark) {
         UserInfo userInfo = RoleInterceptor.userHolder.get();
-        return componentService.modifyComponent(userInfo, cabinetId, boxId, ComponentType.getByIndex(componentIndex), remark, size);
+        return componentService.modifyComponent(userInfo, cabinetId, boxId,null, remark, size);
     }
 
 }

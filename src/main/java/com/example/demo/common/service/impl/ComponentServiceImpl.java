@@ -1,6 +1,7 @@
 package com.example.demo.common.service.impl;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.example.demo.common.entity.Box;
 import com.example.demo.common.entity.Record;
 import com.example.demo.common.entity.User;
 import com.example.demo.common.enums.ComponentType;
@@ -9,6 +10,7 @@ import com.example.demo.common.enums.RecordState;
 import com.example.demo.common.exception.GlobalRunTimeException;
 import com.example.demo.common.mapper.RecordMapper;
 import com.example.demo.common.model.UserInfo;
+import com.example.demo.common.service.BoxService;
 import com.example.demo.common.service.ComponentService;
 import com.example.demo.common.utils.JsonUtil;
 import com.example.demo.mqtt.enums.ActionType;
@@ -25,6 +27,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
+import java.util.Optional;
 
 
 @Service
@@ -34,6 +37,8 @@ public class ComponentServiceImpl implements ComponentService {
     private MqttService mqttService;
     @Resource
     private RecordMapper recordMapper;
+    @Resource
+    private BoxService boxService;
     private static final String topic = "topic/box";
 
 
@@ -41,9 +46,11 @@ public class ComponentServiceImpl implements ComponentService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public String modifyComponent(UserInfo userInfo, Integer cabinetId, Integer boxId, ComponentType componentType, String remark, Integer size) {
+        Integer globalId = Optional.ofNullable(boxService.getBox(cabinetId, boxId))
+                .orElseThrow(() -> new GlobalRunTimeException(ErrorEnum.COMMON_ERROR,"no such box"))
+                .getId();
         Record record = recordMapper.selectOne(Wrappers.lambdaQuery(Record.class)
-                .eq(Record::getBoxId, boxId)
-                .eq(Record::getComponentIndex, componentType.getIndex())
+                .eq(Record::getBoxGlobalId, globalId)
                 .last("for update"));
         if (record == null) {
             throw new GlobalRunTimeException(ErrorEnum.COMMON_ERROR, "no such storage recorded");
@@ -56,7 +63,10 @@ public class ComponentServiceImpl implements ComponentService {
         if (oldSize < size) {
             type = 1;
         }
-        return modifyComponent(userInfo, cabinetId, boxId, componentType, remark, size, type, record);
+        if(componentType == null){
+            componentType = ComponentType.getByIndex(record.getComponentIndex());
+        }
+        return modifyComponent(userInfo, cabinetId, boxId, componentType , remark, size, type, record);
     }
 
     @Override
@@ -87,7 +97,7 @@ public class ComponentServiceImpl implements ComponentService {
                 .state(RecordState.waiting.getValue())
                 .remark(remark)
                 .storageSize(size)
-                .boxId(boxId)
+                .boxGlobalId(boxId)
                 .type(type)
                 .build();
         recordMapper.insert(record);

@@ -29,6 +29,13 @@ public class GlobalResponse<T> {
         this.data = null;
     }
 
+    private GlobalResponse(ErrorEnum errorEnum,String msg){
+        this.success = false;
+        this.code = errorEnum.getCode();
+        this.msg = errorEnum.getDefaultMsg()+", "+msg;
+        this.data = null;
+    }
+
     public static <T> GlobalResponse<T> success(T data){
         return new GlobalResponse<>(data);
     }
@@ -37,6 +44,9 @@ public class GlobalResponse<T> {
     }
     public static <T> GlobalResponse<T> failure(ErrorEnum e){
         return new GlobalResponse<>(e);
+    }
+    public static <T> GlobalResponse<T> failure(ErrorEnum e,String msg){
+        return new GlobalResponse<>(e,msg);
     }
 
 }
