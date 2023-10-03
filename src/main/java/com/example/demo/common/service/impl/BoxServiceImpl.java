@@ -54,7 +54,7 @@ public class BoxServiceImpl implements BoxService {
                 .remark("init-box")
                 .storageSize(0)
                 .userId(userInfo.getUser().getId())
-                .messageState("init-box")
+                .message("init-box")
                 .type(2)
                 .build();
         cabinetMapper.addBox(cabinetId);
@@ -81,7 +81,7 @@ public class BoxServiceImpl implements BoxService {
                         .remark("init-box")
                         .storageSize(0)
                         .userId(userInfo.getUser().getId())
-                        .messageState("init-box")
+                        .message("init-box")
                         .type(2)
                         .build()
                 ).toList();

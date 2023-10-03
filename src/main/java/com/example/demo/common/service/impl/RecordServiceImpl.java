@@ -28,16 +28,15 @@ public class RecordServiceImpl implements RecordService {
     private BoxService boxService;
 
     @Override
-    public PageModel<RecordModel> getRecord(Integer cabinetId, Integer boxId, Integer pageNum, Integer pageSize) {
+    public PageModel<Record> getRecord(Integer cabinetId, Integer boxId, Integer pageNum, Integer pageSize) {
         Integer globalId = Optional.ofNullable(boxService.getBox(cabinetId, boxId))
                 .orElseThrow(()->new GlobalRunTimeException(ErrorEnum.COMMON_ERROR,"no such box"))
                 .getId();
         IPage<Record> recordPage = recordMapper.selectPage(new Page<>(pageNum,pageSize),Wrappers.lambdaQuery(Record.class)
                 .eq(Record::getBoxGlobalId,globalId));
-        List<RecordModel> recordModels = recordPage.getRecords().stream()
-                .map(record -> new RecordModel(record, ComponentType.getByIndex(record.getComponentIndex())))
-                .toList();
-        return new PageModel<>(recordModels,pageNum,pageSize,(int) recordPage.getTotal());
+        List<Record> records = recordPage.getRecords();
+        records.forEach(Record::fillParam);
+        return new PageModel<>(records,pageNum,pageSize,(int) recordPage.getTotal());
     }
 
 }

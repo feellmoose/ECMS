@@ -7,6 +7,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 public interface RecordService {
 
-    PageModel<RecordModel> getRecord(Integer cabinetId, Integer boxId, Integer pageNum, Integer pageSize);
+    PageModel<Record> getRecord(Integer cabinetId, Integer boxId, Integer pageNum, Integer pageSize);
 
 }

@@ -6,6 +6,7 @@ import com.example.demo.common.entity.User;
 import com.example.demo.common.enums.ComponentType;
 import com.example.demo.common.enums.ErrorEnum;
 import com.example.demo.common.enums.RecordState;
+import com.example.demo.common.enums.RecordType;
 import com.example.demo.common.exception.GlobalRunTimeException;
 import com.example.demo.common.mapper.RecordMapper;
 import com.example.demo.common.model.UserInfo;
@@ -77,6 +78,23 @@ public class ComponentServiceImpl implements ComponentService {
         return NOT_OPEN_MESSAGE;
     }
 
+    @Override
+    public String getComponent(UserInfo userInfo, Integer cabinetId, Integer boxId, String remark, Integer size){
+        Integer globalId = Optional.ofNullable(boxService.getBox(cabinetId, boxId))
+                .orElseThrow(() -> new GlobalRunTimeException(ErrorEnum.COMMON_ERROR, "no such box"))
+                .getId();
+        Record record = recordMapper.selectOne(Wrappers.lambdaQuery(Record.class)
+                .eq(Record::getBoxGlobalId, globalId)
+                .last("limit 1"));
+        if (record == null) {
+            throw new GlobalRunTimeException(ErrorEnum.COMMON_ERROR, "no such storage recorded");
+        }
+        if(record.getStorageSize()<size){
+            throw new GlobalRunTimeException(ErrorEnum.COMMON_ERROR,"no enough component");
+        }
+        return modifyComponent(userInfo, cabinetId, boxId,globalId, ComponentType.getByIndex(record.getComponentIndex()), remark, size, RecordType.get.getType());
+    }
+
 
     @Override
     public String modifyComponent(UserInfo userInfo, Integer cabinetId, Integer boxId, ComponentType componentType, String remark, Integer size) {
@@ -106,7 +124,7 @@ public class ComponentServiceImpl implements ComponentService {
     @Override
     public String optSuccess(ReplyMessageData replyMessageData, Record old) {
         old.setState(RecordState.success.getValue());
-        old.setMessageState(replyMessageData.getDetail());
+        old.setMessage(replyMessageData.getDetail());
         recordMapper.updateById(old);
         return replyMessageData.getDetail();
     }
@@ -114,7 +132,7 @@ public class ComponentServiceImpl implements ComponentService {
     @Override
     public String optFailure(ReplyMessageData replyMessageData, Record old) {
         old.setState(RecordState.failure.getValue());
-        old.setMessageState(replyMessageData.getDetail());
+        old.setMessage(replyMessageData.getDetail());
         recordMapper.updateById(old);
         throw new GlobalRunTimeException(ErrorEnum.COMMON_ERROR, replyMessageData.getDetail());
     }

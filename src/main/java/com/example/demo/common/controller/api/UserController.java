@@ -2,7 +2,6 @@ package com.example.demo.common.controller.api;
 
 import com.example.demo.common.anno.RoleRequire;
 import com.example.demo.common.entity.Cabinet;
-import com.example.demo.common.enums.ComponentType;
 import com.example.demo.common.enums.RoleType;
 import com.example.demo.common.intercepter.RoleInterceptor;
 import com.example.demo.common.model.CabinetModel;
@@ -42,9 +41,10 @@ public class UserController {
 
     @PostMapping("/openBox")
     public String openBox(Integer cabinetId, Integer boxId,
-                          Integer size, String remark) {
+                          @RequestParam(required = false, defaultValue = "0") Integer size,
+                          String remark) {
         UserInfo userInfo = RoleInterceptor.userHolder.get();
-        return componentService.modifyComponent(userInfo, cabinetId, boxId,null, remark, size);
+        return componentService.getComponent(userInfo, cabinetId, boxId, remark, size);
     }
 
 }
