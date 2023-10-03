@@ -4,7 +4,9 @@ import com.example.demo.common.anno.RoleRequire;
 import com.example.demo.common.entity.Box;
 import com.example.demo.common.entity.Cabinet;
 import com.example.demo.common.entity.User;
+import com.example.demo.common.enums.ErrorEnum;
 import com.example.demo.common.enums.RoleType;
+import com.example.demo.common.exception.GlobalRunTimeException;
 import com.example.demo.common.intercepter.RoleInterceptor;
 import com.example.demo.common.model.PageModel;
 import com.example.demo.common.model.UserInfo;
@@ -59,6 +61,9 @@ public class CabinetController {
     public PageModel<Box> getBoxes(Integer cabinetId,
                                    @RequestParam(defaultValue = "1") Integer pageNum,
                                    @RequestParam(defaultValue = "10") Integer pageSize) {
+        if(cabinetId == null){
+            throw new GlobalRunTimeException(ErrorEnum.PARAM_ERROR,"cabinet Id should not be empty");
+        }
         return boxService.getBoxes(cabinetId, pageNum, pageSize);
     }
 
