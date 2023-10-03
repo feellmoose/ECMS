@@ -29,7 +29,10 @@ public class GlobalExceptionHandler {
     public <T> GlobalResponse<T> exception(Exception e) {
         StringBuilder errorMsg = new StringBuilder();
         StackTraceElement[] elements = e.getStackTrace();
-        int max = Math.min(elements.length,5);
+        int max = Math.min(elements.length, 5);
+        if (e.getMessage() != null) {
+            errorMsg.append(e.getMessage());
+        }
         for (int i = 0; i < max; i++) {
             errorMsg.append("\n");
             errorMsg.append(elements[i].getClassName());
@@ -38,7 +41,7 @@ public class GlobalExceptionHandler {
             errorMsg.append(" | at line: ");
             errorMsg.append(elements[i].getLineNumber());
         }
-        log.error("\nInternal server error, error：{},stack print: {}",e.getMessage(),errorMsg);
+        log.error("\nInternal server error, error：{},stack print: {}", e.getMessage(), errorMsg);
         return GlobalResponse.failure(ErrorEnum.INTERNAL_SERVER_ERROR);
     }
 

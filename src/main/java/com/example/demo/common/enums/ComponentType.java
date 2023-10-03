@@ -7,6 +7,8 @@ import lombok.Getter;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @AllArgsConstructor
 @Getter
@@ -29,6 +31,9 @@ public enum ComponentType {
     public final static List<Component> componentList = Arrays.stream(ComponentType.values())
             .map(componentType -> new Component(componentType.name(),componentType.index, componentType.description))
             .toList();
+    public final static Map<Integer,Component> Index2componentMap = componentList.stream()
+            .collect(Collectors.toMap(Component::getIndex,component -> component));
+
 
     @AllArgsConstructor
     @Data

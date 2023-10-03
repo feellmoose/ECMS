@@ -1,7 +1,6 @@
 package com.example.demo.common.service.impl;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.example.demo.common.entity.Box;
 import com.example.demo.common.entity.Record;
 import com.example.demo.common.entity.User;
 import com.example.demo.common.enums.ComponentType;
@@ -24,7 +23,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.eclipse.paho.client.mqttv3.IMqttToken;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
 import java.util.Optional;
@@ -40,18 +38,54 @@ public class ComponentServiceImpl implements ComponentService {
     @Resource
     private BoxService boxService;
     private static final String topic = "topic/box";
+    private static final String NOT_OPEN_MESSAGE = "update-success-with-out-open";
 
+    public String modifyWithOutOpen(UserInfo userInfo, Integer cabinetId, Integer boxId, ComponentType componentType, String remark, Integer size) {
+        Integer globalId = Optional.ofNullable(boxService.getBox(cabinetId, boxId))
+                .orElseThrow(() -> new GlobalRunTimeException(ErrorEnum.COMMON_ERROR, "no such box"))
+                .getId();
+        Record oldRecord = recordMapper.selectOne(Wrappers.lambdaQuery(Record.class)
+                .eq(Record::getBoxGlobalId, globalId)
+                .orderByDesc(Record::getId)
+                .last("limit 1"));
+        if (oldRecord == null) {
+            throw new GlobalRunTimeException(ErrorEnum.COMMON_ERROR, "no such storage recorded");
+        }
+        int type = 3;
+        Integer oldSize = oldRecord.getStorageSize();
+        if (oldSize > size) {
+            type = 0;
+        }
+        if (oldSize < size) {
+            type = 1;
+        }
+        if (componentType == null) {
+            componentType = ComponentType.getByIndex(oldRecord.getComponentIndex());
+        }
+        User user = userInfo.getUser();
+        Record record = Record.builder()
+                .userId(user.getId())
+                .messageId(NOT_OPEN_MESSAGE)
+                .componentIndex(componentType.getIndex())
+                .state(RecordState.success.getValue())
+                .remark(remark)
+                .storageSize(size)
+                .boxGlobalId(globalId)
+                .type(type)
+                .build();
+        recordMapper.insert(record);
+        return NOT_OPEN_MESSAGE;
+    }
 
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
     public String modifyComponent(UserInfo userInfo, Integer cabinetId, Integer boxId, ComponentType componentType, String remark, Integer size) {
         Integer globalId = Optional.ofNullable(boxService.getBox(cabinetId, boxId))
-                .orElseThrow(() -> new GlobalRunTimeException(ErrorEnum.COMMON_ERROR,"no such box"))
+                .orElseThrow(() -> new GlobalRunTimeException(ErrorEnum.COMMON_ERROR, "no such box"))
                 .getId();
         Record record = recordMapper.selectOne(Wrappers.lambdaQuery(Record.class)
                 .eq(Record::getBoxGlobalId, globalId)
-                .last("for update"));
+                .last("limit 1"));
         if (record == null) {
             throw new GlobalRunTimeException(ErrorEnum.COMMON_ERROR, "no such storage recorded");
         }
@@ -63,10 +97,10 @@ public class ComponentServiceImpl implements ComponentService {
         if (oldSize < size) {
             type = 1;
         }
-        if(componentType == null){
+        if (componentType == null) {
             componentType = ComponentType.getByIndex(record.getComponentIndex());
         }
-        return modifyComponent(userInfo, cabinetId, boxId, componentType , remark, size, type, record);
+        return modifyComponent(userInfo, cabinetId, boxId, globalId, componentType, remark, size, type);
     }
 
     @Override
@@ -85,7 +119,7 @@ public class ComponentServiceImpl implements ComponentService {
         throw new GlobalRunTimeException(ErrorEnum.COMMON_ERROR, replyMessageData.getDetail());
     }
 
-    private String modifyComponent(UserInfo userInfo, Integer cabinetId, Integer boxId, ComponentType componentType, String remark, Integer size, Integer type, Record old) {
+    private String modifyComponent(UserInfo userInfo, Integer cabinetId, Integer boxId, Integer globalId, ComponentType componentType, String remark, Integer size, Integer type) {
         User user = userInfo.getUser();
         OpenMessageData data = new OpenMessageData(user.getId(), user.getUsername(), cabinetId, boxId, componentType, size, type);
         MqttMessageDetail messageDetail = new MqttMessageDetail(data, ActionType.open);
@@ -97,7 +131,7 @@ public class ComponentServiceImpl implements ComponentService {
                 .state(RecordState.waiting.getValue())
                 .remark(remark)
                 .storageSize(size)
-                .boxGlobalId(boxId)
+                .boxGlobalId(globalId)
                 .type(type)
                 .build();
         recordMapper.insert(record);
@@ -124,8 +158,8 @@ public class ComponentServiceImpl implements ComponentService {
         }
         ReplyMessageData replyMessageData = (ReplyMessageData) mqttMessageDetail.getData();
         return switch (replyMessageData.getStatus()) {
-            case -1 -> optFailure(replyMessageData, old);
-            case 0 -> optSuccess(replyMessageData, old);
+            case -1 -> optFailure(replyMessageData, record);
+            case 0 -> optSuccess(replyMessageData, record);
             default -> {
                 log.warn("error status of message: {}", mqttMessageDetail);
                 throw new GlobalRunTimeException(ErrorEnum.COMMON_ERROR, "error status of message");

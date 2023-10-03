@@ -8,6 +8,8 @@ import com.example.demo.mqtt.model.data.ReplyMessageData;
 import java.util.List;
 
 public interface ComponentService {
+
+    String modifyWithOutOpen(UserInfo userInfo, Integer cabinetId, Integer boxId, ComponentType componentType, String remark, Integer size);
     String modifyComponent(UserInfo userInfo, Integer cabinetId, Integer boxId, ComponentType componentType, String remark, Integer size);
 
     String optSuccess(ReplyMessageData replyMessageData, Record old);

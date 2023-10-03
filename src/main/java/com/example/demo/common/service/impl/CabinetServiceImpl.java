@@ -44,9 +44,9 @@ public class CabinetServiceImpl implements CabinetService {
     public void addCabinet(UserInfo userInfo,String location, String description, Integer boxSize,Integer actionType) {
         Cabinet cabinet = new Cabinet(null, location, description, boxSize);
         cabinetMapper.insert(cabinet);
-        List<Integer> list = new ArrayList<>(boxSize);
+        List<Integer> list = new ArrayList<>();
         for (int i = 0; i < boxSize; i++) {
-            list.set(i, i + 1);
+            list.add(i, i + 1);
         }
         boxService.addBranchBoxForCabinet(userInfo,cabinet.getId(), list,actionType);
     }

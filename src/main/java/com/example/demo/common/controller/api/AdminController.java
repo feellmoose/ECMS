@@ -33,7 +33,8 @@ public class AdminController {
     @PostMapping("/cabinet/storageInfo")
     public String modifyCabinetStorage(Integer cabinetId,Integer boxId,Integer componentIndex,
                                        @RequestParam(required = false,defaultValue = "0") Integer size,
-                                       @RequestParam(required = false,defaultValue = "") String remark) {
+                                       @RequestParam(required = false,defaultValue = "") String remark,
+                                       @RequestParam(required = false,defaultValue = "true") Boolean open) {
         UserInfo userInfo = RoleInterceptor.userHolder.get();
         if(componentIndex == null){
             throw new GlobalRunTimeException(ErrorEnum.PARAM_ERROR,"invalid component");
@@ -41,7 +42,11 @@ public class AdminController {
         if(!size.equals(0) && componentIndex.equals(ComponentType.Empty.getIndex())) {
             throw new GlobalRunTimeException(ErrorEnum.PARAM_ERROR);
         }
-        return componentService.modifyComponent(userInfo, cabinetId, boxId, ComponentType.getByIndex(componentIndex), remark, size);
+        if(open) {
+            return componentService.modifyComponent(userInfo, cabinetId, boxId, ComponentType.getByIndex(componentIndex), remark, size);
+        }else {
+            return componentService.modifyWithOutOpen(userInfo, cabinetId, boxId, ComponentType.getByIndex(componentIndex), remark, size);
+        }
     }
 
     @GetMapping("/records")
