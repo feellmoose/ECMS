@@ -3,8 +3,13 @@ package com.example.demo.common.controller.api;
 import com.example.demo.common.anno.RoleRequire;
 import com.example.demo.common.entity.Box;
 import com.example.demo.common.entity.Cabinet;
+import com.example.demo.common.entity.User;
+import com.example.demo.common.enums.ErrorEnum;
 import com.example.demo.common.enums.RoleType;
+import com.example.demo.common.exception.GlobalRunTimeException;
+import com.example.demo.common.intercepter.RoleInterceptor;
 import com.example.demo.common.model.PageModel;
+import com.example.demo.common.model.UserInfo;
 import com.example.demo.common.service.BoxService;
 import com.example.demo.common.service.CabinetService;
 import jakarta.annotation.Resource;
@@ -34,8 +39,9 @@ public class CabinetController {
     }
 
     @PostMapping("/add")
-    public String addCabinet(String location, String description, Integer boxSize) {
-        cabinetService.addCabinet(location, description, boxSize);
+    public String addCabinet(String location, String description, Integer boxSize, @RequestParam(required = false) Integer actionType) {
+        UserInfo userInfo = RoleInterceptor.userHolder.get();
+        cabinetService.addCabinet(userInfo,location, description, boxSize,actionType);
         return "ok";
     }
 
@@ -55,17 +61,23 @@ public class CabinetController {
     public PageModel<Box> getBoxes(Integer cabinetId,
                                    @RequestParam(defaultValue = "1") Integer pageNum,
                                    @RequestParam(defaultValue = "10") Integer pageSize) {
+        if(cabinetId == null){
+            throw new GlobalRunTimeException(ErrorEnum.PARAM_ERROR,"cabinet Id should not be empty");
+        }
         return boxService.getBoxes(cabinetId, pageNum, pageSize);
     }
 
     @PostMapping("/box/add")
-    public String addBoxForCabinet(Integer cabinetId, Integer boxId, Integer actionType) {
-        boxService.addBoxForCabinet(cabinetId, boxId, actionType);
+    public String addBoxForCabinet(Integer cabinetId,
+                                   Integer boxId,
+                                   @RequestParam(required = false) Integer actionType) {
+        UserInfo userInfo = RoleInterceptor.userHolder.get();
+        boxService.addBoxForCabinet(userInfo, cabinetId, boxId, actionType);
         return "ok";
     }
 
     @PostMapping("/box/update")
-    public String modifyBoxForCabinet(Integer id, Integer cabinetId, Integer boxId, Integer actionType) {
+    public String modifyBoxForCabinet(Integer id, Integer cabinetId, Integer boxId, @RequestParam(required = false) Integer actionType) {
         boxService.modifyBoxForCabinet(id, cabinetId, boxId, actionType);
         return "ok";
     }

@@ -2,6 +2,8 @@ package com.example.demo.common.model;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
+import com.example.demo.common.enums.ComponentType;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -10,9 +12,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Storage {
-    @TableId(type = IdType.AUTO)
-    private Integer id;
-    private Integer boxId;
-    private Integer componentId;
+    @JsonIgnore
+    private Integer componentIndex;
+    private ComponentType.Component component;
     private Integer storageSize;
 }

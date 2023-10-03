@@ -6,7 +6,6 @@ import com.example.demo.common.exception.GlobalRunTimeException;
 import com.example.demo.common.utils.JsonUtil;
 import com.example.demo.mqtt.async.EcmsMqttCallback;
 import com.example.demo.mqtt.model.MqttMessageDetail;
-import com.example.demo.mqtt.model.data.MessageData;
 import com.example.demo.mqtt.service.MqttService;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
@@ -14,7 +13,7 @@ import org.eclipse.paho.client.mqttv3.*;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 import org.springframework.stereotype.Component;
 
-import static com.example.demo.mqtt.config.MqttServiceConfiguration.*;
+import static com.example.demo.common.config.MqttServiceConfiguration.*;
 
 @Component
 @Slf4j
@@ -22,7 +21,7 @@ public class MqttServiceImpl implements MqttService {
 
     @Resource
     private EcmsMqttCallback ecmsMqttCallback;
-    private MqttClient mqttClient = getMqttClient();
+    private MqttClient mqttClient = getClient();
 
     private static final int qos = 1;
 
@@ -49,7 +48,7 @@ public class MqttServiceImpl implements MqttService {
     }
 
 
-    private MqttClient getMqttClient() {
+    private MqttClient getClient() {
         if(mqttClient!=null&& mqttClient.isConnected()){
             return mqttClient;
         }
@@ -82,7 +81,7 @@ public class MqttServiceImpl implements MqttService {
 
     private void checkConnection() {
         if (mqttClient == null) {
-            mqttClient = getMqttClient();
+            mqttClient = getClient();
             if (mqttClient == null) {
                 throw new GlobalRunTimeException(ErrorEnum.MQTT_ERROR, "mqtt server connect failed");
             }

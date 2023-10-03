@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.common.mapper.RecordMapper">
+
+    <insert id="insertBranch" parameterType="java.util.List">
+        insert into record (message_id, type, user_id, box_global_id, component_index, storage_size, state,
+        message_state, remark) values
+        <foreach collection="list" index="index" item="item" separator=",">
+            (#{item.messageId},#{item.type},#{item.userId},#{item.boxGlobalId},#{item.componentIndex},#{item.storageSize},#{item.state},#{item.messageState},#{item.remark})
+        </foreach>
+    </insert>
+
+
+</mapper>

@@ -8,5 +8,8 @@ import org.springframework.stereotype.Repository;
 @Mapper
 @Repository
 public interface CabinetMapper extends BaseMapper<Cabinet> {
-    Integer modifyCabinet(Integer id, String location, String description,Integer boxSize);
+    void addBox(Integer cabinetId);
+    void delBox(Integer cabinetId);
+    void delAllBox(Integer cabinetId);
+
 }
