@@ -12,6 +12,7 @@ import com.example.demo.common.mapper.RecordMapper;
 import com.example.demo.common.model.UserInfo;
 import com.example.demo.common.service.BoxService;
 import com.example.demo.common.service.ComponentService;
+import com.example.demo.common.service.TransactionalComponentService;
 import com.example.demo.common.utils.JsonUtil;
 import com.example.demo.mqtt.enums.ActionType;
 import com.example.demo.mqtt.model.MqttMessageDetail;
@@ -24,9 +25,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.eclipse.paho.client.mqttv3.IMqttToken;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
+import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.DelayQueue;
 
 
 @Service
@@ -38,9 +42,20 @@ public class ComponentServiceImpl implements ComponentService {
     private RecordMapper recordMapper;
     @Resource
     private BoxService boxService;
+    @Resource
+    private TransactionalComponentService transactionalComponentService;
+
     private static final String topic = "topic/box";
     private static final String NOT_OPEN_MESSAGE = "update-success-with-out-open";
 
+    @Override
+    public String getComponent(UserInfo userInfo, Integer cabinetId, Integer boxId, String remark, Integer size) {
+        Map<String,Object> map = transactionalComponentService.getComponent(userInfo, cabinetId, boxId, remark, size);
+        return doWithOutTransaction((Record) map.get("record"),(MqttMessageDetail) map.get("messageDetail"));
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
     public String modifyWithOutOpen(UserInfo userInfo, Integer cabinetId, Integer boxId, ComponentType componentType, String remark, Integer size) {
         Integer globalId = Optional.ofNullable(boxService.getBox(cabinetId, boxId))
                 .orElseThrow(() -> new GlobalRunTimeException(ErrorEnum.COMMON_ERROR, "no such box"))
@@ -48,7 +63,7 @@ public class ComponentServiceImpl implements ComponentService {
         Record oldRecord = recordMapper.selectOne(Wrappers.lambdaQuery(Record.class)
                 .eq(Record::getBoxGlobalId, globalId)
                 .orderByDesc(Record::getId)
-                .last("limit 1"));
+                .last("limit 1 for update"));
         if (oldRecord == null) {
             throw new GlobalRunTimeException(ErrorEnum.COMMON_ERROR, "no such storage recorded");
         }
@@ -79,47 +94,11 @@ public class ComponentServiceImpl implements ComponentService {
     }
 
     @Override
-    public String getComponent(UserInfo userInfo, Integer cabinetId, Integer boxId, String remark, Integer size){
-        Integer globalId = Optional.ofNullable(boxService.getBox(cabinetId, boxId))
-                .orElseThrow(() -> new GlobalRunTimeException(ErrorEnum.COMMON_ERROR, "no such box"))
-                .getId();
-        Record record = recordMapper.selectOne(Wrappers.lambdaQuery(Record.class)
-                .eq(Record::getBoxGlobalId, globalId)
-                .last("limit 1"));
-        if (record == null) {
-            throw new GlobalRunTimeException(ErrorEnum.COMMON_ERROR, "no such storage recorded");
-        }
-        if(record.getStorageSize()<size){
-            throw new GlobalRunTimeException(ErrorEnum.COMMON_ERROR,"no enough component");
-        }
-        return modifyComponent(userInfo, cabinetId, boxId,globalId, ComponentType.getByIndex(record.getComponentIndex()), remark, size, RecordType.get.getType());
-    }
-
-
-    @Override
     public String modifyComponent(UserInfo userInfo, Integer cabinetId, Integer boxId, ComponentType componentType, String remark, Integer size) {
-        Integer globalId = Optional.ofNullable(boxService.getBox(cabinetId, boxId))
-                .orElseThrow(() -> new GlobalRunTimeException(ErrorEnum.COMMON_ERROR, "no such box"))
-                .getId();
-        Record record = recordMapper.selectOne(Wrappers.lambdaQuery(Record.class)
-                .eq(Record::getBoxGlobalId, globalId)
-                .last("limit 1"));
-        if (record == null) {
-            throw new GlobalRunTimeException(ErrorEnum.COMMON_ERROR, "no such storage recorded");
-        }
-        int type = 3;
-        Integer oldSize = record.getStorageSize();
-        if (oldSize > size) {
-            type = 0;
-        }
-        if (oldSize < size) {
-            type = 1;
-        }
-        if (componentType == null) {
-            componentType = ComponentType.getByIndex(record.getComponentIndex());
-        }
-        return modifyComponent(userInfo, cabinetId, boxId, globalId, componentType, remark, size, type);
+        Map<String,Object> map = transactionalComponentService.modifyComponent(userInfo, cabinetId, boxId, componentType, remark, size);
+        return doWithOutTransaction((Record) map.get("record"),(MqttMessageDetail) map.get("messageDetail"));
     }
+
 
     @Override
     public String optSuccess(ReplyMessageData replyMessageData, Record old) {
@@ -137,27 +116,12 @@ public class ComponentServiceImpl implements ComponentService {
         throw new GlobalRunTimeException(ErrorEnum.COMMON_ERROR, replyMessageData.getDetail());
     }
 
-    private String modifyComponent(UserInfo userInfo, Integer cabinetId, Integer boxId, Integer globalId, ComponentType componentType, String remark, Integer size, Integer type) {
-        User user = userInfo.getUser();
-        OpenMessageData data = new OpenMessageData(user.getId(), user.getUsername(), cabinetId, boxId, componentType, size, type);
-        MqttMessageDetail messageDetail = new MqttMessageDetail(data, ActionType.open);
-        mqttService.publish(topic, messageDetail);
-        Record record = Record.builder()
-                .userId(user.getId())
-                .messageId(messageDetail.getMessageId())
-                .componentIndex(componentType.getIndex())
-                .state(RecordState.waiting.getValue())
-                .remark(remark)
-                .storageSize(size)
-                .boxGlobalId(globalId)
-                .type(type)
-                .build();
-        recordMapper.insert(record);
+    private String doWithOutTransaction(Record record,MqttMessageDetail messageDetail){
+        //前面第一次插入已经成功了，这里是针对每个record单独的流程，所以不需要上锁也是可以的。
         MqttMessageDetail mqttMessageDetail;
         try {
             IMqttToken token = mqttService.subscribeWithResponse(topic);
             token.waitForCompletion(5000);
-            //TODO 这里可能有并发问题
             String payload = Arrays.toString(token.getResponse().getPayload());
             mqttMessageDetail = JsonUtil.fromJson(payload, MqttMessageDetail.class);
         } catch (MqttException e) {
@@ -183,6 +147,7 @@ public class ComponentServiceImpl implements ComponentService {
                 throw new GlobalRunTimeException(ErrorEnum.COMMON_ERROR, "error status of message");
             }
         };
+
     }
 
 }
