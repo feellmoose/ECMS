@@ -80,7 +80,7 @@ public class TransactionalComponentServiceImpl implements TransactionalComponent
 
     private Map<String, Object> modifyComponent(UserInfo userInfo, Integer cabinetId, Integer boxId, Integer globalId, ComponentType componentType, String remark, Integer size, Integer type) {
         User user = userInfo.getUser();
-        OpenMessageData data = new OpenMessageData(user.getId(), user.getUsername(), cabinetId, boxId, componentType, size, type);
+        OpenMessageData data = new OpenMessageData(user.getId(), user.getName(), cabinetId, boxId, componentType, size, type);
         MqttMessageDetail messageDetail = new MqttMessageDetail(data, ActionType.open);
         mqttService.publish(topic, messageDetail);
         Record record = Record.builder()
