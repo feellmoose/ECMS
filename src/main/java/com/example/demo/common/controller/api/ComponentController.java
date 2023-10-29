@@ -1,6 +1,8 @@
 package com.example.demo.common.controller.api;
 
+import com.example.demo.common.anno.RoleRequire;
 import com.example.demo.common.enums.ComponentType;
+import com.example.demo.common.enums.RoleType;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;

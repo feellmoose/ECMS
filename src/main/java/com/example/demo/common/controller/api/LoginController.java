@@ -6,6 +6,7 @@ import com.example.demo.common.service.LoginService;
 import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Map;
@@ -23,16 +24,20 @@ public class LoginController {
     @Resource
     private LoginService loginService;
 
-
     @PostMapping("/")
-    public LoginInfoModel login(String code){
-        UserInfo userInfo = loginService.login(code);
+    public LoginInfoModel login(@RequestParam String unionId,
+                                @RequestParam String password,
+                                @RequestParam Integer type){
+        UserInfo userInfo = loginService.login(unionId, password, type);
         return LoginInfoModel.getByUserInfo(userInfo);
     }
 
     @PostMapping("/register")
-    public LoginInfoModel register(String username,String logId, String code){
-        UserInfo userInfo = loginService.register(username, logId, code);
+    public LoginInfoModel register(@RequestParam String unionId,
+                                   @RequestParam String password,
+                                   @RequestParam String name,
+                                   @RequestParam String email){
+        UserInfo userInfo = loginService.register(unionId, password, name, email);
         return LoginInfoModel.getByUserInfo(userInfo);
     }
 

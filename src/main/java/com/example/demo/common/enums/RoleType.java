@@ -1,5 +1,6 @@
 package com.example.demo.common.enums;
 
+import com.example.demo.common.exception.GlobalRunTimeException;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -12,4 +13,14 @@ public enum RoleType {
     ;
     private final Integer type;
     private final String description;
+
+    static public RoleType getType(Integer role){
+        for (RoleType roleType: values()) {
+            if(roleType.type.equals(role)){
+                return roleType;
+            }
+        }
+        throw new GlobalRunTimeException(ErrorEnum.PARAM_ERROR,"no match roleType");
+    }
+
 }

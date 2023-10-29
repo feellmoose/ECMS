@@ -2,8 +2,12 @@
 CREATE TABLE if not exists `user`
 (
     `id`       int          NOT NULL AUTO_INCREMENT COMMENT '用户id',
-    `username` varchar(225) NOT NULL COMMENT '225',
-    `log_id`   varchar(225) NOT NULL COMMENT '登录id',
+    `name` varchar(225) NOT NULL COMMENT 'name',
+    `union_id` varchar(225) NOT NULL COMMENT '',
+    `password` varchar(225) NOT NULL COMMENT '密码',
+    `salt` varchar(32) NOT NULL COMMENT 'salt',
+    `email` varchar(225) NOT NULL COMMENT '邮箱',
+    UNIQUE KEY `u_union_id` (`union_id`),
     PRIMARY KEY (`id`)
 ) ENGINE = InnoDB
   AUTO_INCREMENT = 1

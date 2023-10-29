@@ -28,7 +28,7 @@ public class RoleInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull Object handler) throws Exception {
-        userHolder.set(new UserInfo(new User(1,"test_user","test_logId"), Arrays.asList(RoleType.ADMIN,RoleType.USER,RoleType.ROOT)));
+        userHolder.set(new UserInfo(new User(1,"test_user","","","",""), Arrays.asList(RoleType.ADMIN,RoleType.USER,RoleType.ROOT)));
         return true;
         //        RoleRequire roleRequire = ((HandlerMethod) handler).getBeanType().getAnnotation(RoleRequire.class);
 //        if (roleRequire == null) {

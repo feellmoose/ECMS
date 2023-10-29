@@ -6,7 +6,6 @@ import com.example.demo.common.entity.User;
 import com.example.demo.common.enums.ComponentType;
 import com.example.demo.common.enums.ErrorEnum;
 import com.example.demo.common.enums.RecordState;
-import com.example.demo.common.enums.RecordType;
 import com.example.demo.common.exception.GlobalRunTimeException;
 import com.example.demo.common.mapper.RecordMapper;
 import com.example.demo.common.model.UserInfo;
@@ -16,7 +15,6 @@ import com.example.demo.common.service.TransactionalComponentService;
 import com.example.demo.common.utils.JsonUtil;
 import com.example.demo.mqtt.enums.ActionType;
 import com.example.demo.mqtt.model.MqttMessageDetail;
-import com.example.demo.mqtt.model.data.OpenMessageData;
 import com.example.demo.mqtt.model.data.ReplyMessageData;
 import com.example.demo.mqtt.model.data.RevokeMessageData;
 import com.example.demo.mqtt.service.MqttService;
@@ -30,7 +28,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.DelayQueue;
 
 
 @Service
@@ -50,8 +47,18 @@ public class ComponentServiceImpl implements ComponentService {
 
     @Override
     public String getComponent(UserInfo userInfo, Integer cabinetId, Integer boxId, String remark, Integer size) {
-        Map<String,Object> map = transactionalComponentService.getComponent(userInfo, cabinetId, boxId, remark, size);
-        return doWithOutTransaction((Record) map.get("record"),(MqttMessageDetail) map.get("messageDetail"));
+        synchronized (this) {
+            Map<String, Object> map = transactionalComponentService.getComponent(userInfo, cabinetId, boxId, remark, size);
+            return doWithOutTransaction((Record) map.get("record"), (MqttMessageDetail) map.get("messageDetail"));
+        }
+    }
+
+    @Override
+    public String modifyComponent(UserInfo userInfo, Integer cabinetId, Integer boxId, ComponentType componentType, String remark, Integer size) {
+        synchronized (this) {
+            Map<String, Object> map = transactionalComponentService.modifyComponent(userInfo, cabinetId, boxId, componentType, remark, size);
+            return doWithOutTransaction((Record) map.get("record"), (MqttMessageDetail) map.get("messageDetail"));
+        }
     }
 
     @Override
@@ -93,12 +100,6 @@ public class ComponentServiceImpl implements ComponentService {
         return NOT_OPEN_MESSAGE;
     }
 
-    @Override
-    public String modifyComponent(UserInfo userInfo, Integer cabinetId, Integer boxId, ComponentType componentType, String remark, Integer size) {
-        Map<String,Object> map = transactionalComponentService.modifyComponent(userInfo, cabinetId, boxId, componentType, remark, size);
-        return doWithOutTransaction((Record) map.get("record"),(MqttMessageDetail) map.get("messageDetail"));
-    }
-
 
     @Override
     public String optSuccess(ReplyMessageData replyMessageData, Record old) {
@@ -116,7 +117,7 @@ public class ComponentServiceImpl implements ComponentService {
         throw new GlobalRunTimeException(ErrorEnum.COMMON_ERROR, replyMessageData.getDetail());
     }
 
-    private String doWithOutTransaction(Record record,MqttMessageDetail messageDetail){
+    private String doWithOutTransaction(Record record, MqttMessageDetail messageDetail) {
         //前面第一次插入已经成功了，这里是针对每个record单独的流程，所以不需要上锁也是可以的。
         MqttMessageDetail mqttMessageDetail;
         try {

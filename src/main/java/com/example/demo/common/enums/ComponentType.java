@@ -13,12 +13,12 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 @Getter
 public enum ComponentType {
-    Empty(0,"empty_box"),
-    XXX(1,"xxx")
+    Empty(0,"empty_box",""),
+    XXX(1,"xxx","")
     ;
     private final Integer index;
     private final String description;
-
+    private final String url;
     public static ComponentType getByIndex(Integer index) {
         for (ComponentType componentType:ComponentType.values()){
             if(index.equals(componentType.index)){
@@ -29,7 +29,7 @@ public enum ComponentType {
     }
 
     public final static List<Component> componentList = Arrays.stream(ComponentType.values())
-            .map(componentType -> new Component(componentType.name(),componentType.index, componentType.description))
+            .map(componentType -> new Component(componentType.name(),componentType.index, componentType.description, componentType.url))
             .toList();
     public final static Map<Integer,Component> Index2componentMap = componentList.stream()
             .collect(Collectors.toMap(Component::getIndex,component -> component));
@@ -41,5 +41,6 @@ public enum ComponentType {
         private final String name;
         private final Integer index;
         private final String description;
+        private final String url;
     }
 }
